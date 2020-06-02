@@ -21,7 +21,7 @@ end draw_vga;
 architecture behavioral of draw_vga is
 
 
-	--señales para registrar y que asi no dependa tanta logica de las entradas y evitamos delays
+    --seÃ±ales para registrar.
     signal r_filaactiva   : integer range 0 to 480 := 0;
     signal r_colactiva    : integer range 0 to 640 := 0;
     signal r_filaactiva_r : integer range 0 to 480 := 0;
@@ -29,21 +29,21 @@ architecture behavioral of draw_vga is
     signal r_pos_servo_r  : integer range 45 to 135 := 45;
     signal r_pos_servo    : integer range 45 to 135 := 45;
     signal r_disp_ena     : std_logic := '0';
-    signal r_vga_red      : std_logic_vector(3 downto 0) := (others => '0');		--u
+    signal r_vga_red      : std_logic_vector(3 downto 0) := (others => '0');		
     signal r_vga_blue     : std_logic_vector(3 downto 0) := (others => '0');
     signal r_vga_green    : std_logic_vector(3 downto 0) := (others => '0');	
 
     type t_rom  is array (0 to 90) of integer;
     
     
-    --rom con las tangentes del angulo multiplicadas por 100(esta en orden de pendientes para que vaya barriendo
+    --rom con las tangentes del angulo multiplicadas por 100(esta en orden de pendientes para que vaya barriendo)
     constant  tan_rom : t_rom := ( 
     							-100, -103, -107, -111, -115, -119, -123, -127, -132, -137, -143,
  							    -148, -154, -160, -166, -173, -180, -188, -196, -205, -214, -225,
  							    -236, -248, -261, -275, -290, -308, -327, -349, -373, -401, -433,
  							    -470, -514, -567, -631, -712, -814, -951, -1143, -1430, -1908, -2863,
  							    -5729,
- 							    0,  			--no se lee
+ 							    0,  			--**
  							    5729, 2863, 1908, 1430, 1143, 951, 814, 712, 631, 567, 514, 470,
  							    433, 401, 373, 349, 327, 308, 290, 275, 261, 248, 236, 225, 214,
  							    205, 196, 188, 180, 173, 166, 160, 154, 148, 143, 137, 132, 127,
@@ -53,7 +53,7 @@ architecture behavioral of draw_vga is
 begin
 
 
-    --registramos dos veces las señales para evitar setup delays, hacemos que la señal recorra menos camino entre flipflops evitando asi setup violations
+    --registramos dos veces las seÃ±ales para evitar setup delays.
     sample_coordinates : process(i_clock) is
     begin
         
@@ -88,21 +88,21 @@ begin
                      r_vga_blue   <= (others => '0');     
                  end if;
                  
-                 --si es menor que el radio lo ponemos negro, asi lo de encima se queda verde
+                
                  if( (r_colactiva - 319)**2 + (r_filaactiva - 479)**2 <= 395**2 ) then
                      r_vga_red    <= (others => '0');
                      r_vga_green  <= (others => '0');
                      r_vga_blue   <= (others => '0'); 
                  end if;
                  
-                 --ahora queremos poner verde todo hasta el 299
+                 
                  if( (r_colactiva - 319)**2 + (r_filaactiva - 479)**2 <= 299**2 ) then
                      r_vga_red    <= (others => '0');
                      r_vga_green  <= (others => '1');
                      r_vga_blue   <= (others => '0'); 
                  end if;
                  
-                 --lo volvemos a poner negro todo debajo de 294, como estaba verde encima pos eso
+                 
                  if( (r_colactiva - 319)**2 + (r_filaactiva - 479)**2 <= 295**2 ) then
                      r_vga_red    <= (others => '0');
                      r_vga_green  <= (others => '0');
@@ -110,7 +110,7 @@ begin
                  end if;
                  
   -----------------------------------circulos inferiores-----------------------------------------------------
-                  --etc
+                  
                  if( (r_colactiva - 319)**2 + (r_filaactiva - 479)**2 <= 199**2 ) then
                      r_vga_red    <= (others => '0');
                      r_vga_green  <= (others => '1');
@@ -139,49 +139,48 @@ begin
 	
 -------------------------------algoritmo del arco usando tangente------------------------------------------
 			
-				if( r_pos_servo > 90) then
+		   if( r_pos_servo > 90) then
 					
-					--cuando estemos en la posicion de tangente positivia(anchura 4 pixeles)
-					if( (tan_rom(r_pos_servo - 45))*(r_colactiva - 322) <= 100*(r_filaactiva - 480) and
-						(tan_rom(r_pos_servo - 45))*(r_colactiva - 318) >= 100*(r_filaactiva - 480) ) then
+			--cuando estemos en la posicion de tangente positivia(anchura 4 pixeles)
+			if( (tan_rom(r_pos_servo - 45))*(r_colactiva - 322) <= 100*(r_filaactiva - 480) and
+			 	(tan_rom(r_pos_servo - 45))*(r_colactiva - 318) >= 100*(r_filaactiva - 480) ) then
                 		  
-						r_vga_red    <= (others => '1');
+				r_vga_red    <= (others => '1');
 	                	r_vga_green  <= (others => '1');
-    	            	r_vga_blue   <= (others => '1');              --lo pintamos blanco
+    	            		r_vga_blue   <= (others => '1');              --lo pintamos blanco
    	            	
 	                end if;	              
-	                
+	                	
 	            elsif(r_pos_servo < 90) then
 	            	
 	            	--cuando estemos en la posicion de tangente negativa
-					if( (tan_rom(r_pos_servo - 45))*(r_colactiva - 318) <= 100*(r_filaactiva - 480) and
-						(tan_rom(r_pos_servo - 45))*(r_colactiva - 322) >= 100*(r_filaactiva - 480) ) then		
+			if( (tan_rom(r_pos_servo - 45))*(r_colactiva - 318) <= 100*(r_filaactiva - 480) and
+				(tan_rom(r_pos_servo - 45))*(r_colactiva - 322) >= 100*(r_filaactiva - 480) ) then		
 												
-						r_vga_red    <= (others => '1');
+				r_vga_red    <= (others => '1');
 	                	r_vga_green  <= (others => '1');
-    	            	r_vga_blue   <= (others => '1');              --lo pintamos blanco    	
+    	            		r_vga_blue   <= (others => '1');              --lo pintamos blanco    	
 
 	                end if;	                
 	
-	          	 else
+	             else
 	           		--cuando estemos en la posicion 90 
-					if((r_colactiva >= 318) and (r_colactiva <= 322)) then
-					 
-						r_vga_red    <= (others => '1');
-	                	r_vga_green  <= (others => '1');
-    	            	r_vga_blue   <= (others => '1');              --lo pintamos blanco
-    	            		        
-	                end if;								           		
+				if((r_colactiva >= 318) and (r_colactiva <= 322)) then
+					r_vga_red    <= (others => '1');
+	                		r_vga_green  <= (others => '1');
+    	            			r_vga_blue   <= (others => '1');              --lo pintamos blanco
+    	               
+	               		end if;								           		
 	             	
-			  	end if;
+		  	end if;
 				
-			  else
-			  	
+	  else--Not disp enable
+		  	
                 r_vga_red    <= (others => '0');
                 r_vga_blue   <= (others => '0');
                 r_vga_green  <= (others => '0');
 
-			end if;
+	  end if;--Not rising edge
 			
             o_vga_red   <= r_vga_red;   --metemos un registro de por medio para evitar porblemas de timing
             o_vga_green <= r_vga_green;
