@@ -16,13 +16,13 @@ end entity ServoPWM;
 
 architecture RTL of ServoPWM is
 											
-	constant c_incremento    : integer   := 3333333;           				--Contamos hasta aqui para actualizar el servo cada 55 mS
-	constant c_aumentopw     : integer   := 1111;							--Aumentamos el pw 1111 para contar;
-	constant c_pwm_freq      : integer   := 2000000;	        			--2 millones de ciclos de reloj para el periodo de 50 hz
-	constant c_3pi_over4     : integer   := 200000;           				--Anchura de pulso de 2 mS lo pone a la posicion 3 pi cuartos
-	signal pw_counter        : integer range 0 to c_3pi_over4 - 1 := 0;		--Contador Anchura de pulso
+	constant c_incremento    : integer   := 3333333;           		--Contamos hasta aqui para actualizar el servo cada 33 mS
+	constant c_aumentopw     : integer   := 1111;		   		--Aumentamos el pw 1111 para contar;
+	constant c_pwm_freq      : integer   := 2000000;	        	--2 millones de ciclos de reloj para el periodo de 50 hz
+	constant c_3pi_over4     : integer   := 200000;           		--Anchura de pulso de 2 mS lo pone a la posicion 3 pi cuartos
+	signal pw_counter        : integer range 0 to c_3pi_over4 - 1 := 0;	--Contador Anchura de pulso
 	signal freq_counter      : integer range 0 to c_pwm_freq - 1 := 0;
-	signal incrementos	     : integer range 0 to 180 := 0;					--Maximo 180 grados(180 incrementos(90 ida y 90 vuelta))
+	signal incrementos	 : integer range 0 to 180 := 0;			--Maximo 180 grados(180 incrementos
 	signal increment_counter : integer range 0 to c_incremento - 1 := 0;
 	signal r_posicion        : integer range 45 to 135;
 	
@@ -53,7 +53,7 @@ begin
 		
 		if(rising_edge(i_clock)) then
 			
-			--HAcemos 1 grados a la derecha en 90 incrementos 
+			--Hacemos 1 grados a la derecha en 90 incrementos 
 			if(incrementos < 90) then
 				
 				if(increment_counter < c_incremento - 1) then
@@ -78,7 +78,7 @@ begin
 					incrementos <= incrementos + 1;			--Aumentamos de grado en grado
 					r_posicion  <= r_posicion  + 1;
 					address := address + 1;
-					pw_counter <= pw_counter + c_aumentopw; --Aumentamos para que no vuelva a contar(y poner o_pwm = '1' durante ese incremento solo de tiempo),
+					pw_counter <= pw_counter + c_aumentopw; 	--Aumentamos para que no vuelva a contar(y poner o_pwm = '1' durante ese incremento solo de tiempo),
 				end if;
 			
 			--Hacemos 180 grados a la izquierda en 90 incrementos
@@ -106,11 +106,10 @@ begin
 					incrementos <= incrementos + 1;			--Aumentamos de dos en dos grados(ahora hacia el otro lado por disminuir el ancho de pulso)
 					r_posicion  <= r_posicion  - 1;
 					address := address - 1;
-					--Aqui no hace falta hacer lo de arriba ya que es mayor, no entra en el if
 				end if;
 			
-			else											--Ya estamos otra vez en el punto inicial pues reseteamos
-				incrementos <= 0;							--Ponemos los incrementos a 0
+			else							 	--Ya estamos otra vez en el punto inicial pues reseteamos
+				incrementos <= 0;					--Ponemos los incrementos a 0
 				r_posicion  <= 45;
 				address := 0;
 			end if;
