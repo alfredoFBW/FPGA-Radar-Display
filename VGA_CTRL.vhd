@@ -21,8 +21,8 @@ entity vga_ctrl is
          o_hsync       : out std_logic;                         --syncronizacion vertical
          o_vsync       : out std_logic;                         --syncronizacion horizontal
          o_disp_ena    : out std_logic;                         --'1' significa display en zona activa, 0 significa display en zona inactiva
-         o_filaactiva  : out integer range 0 to 480;            --nos da la fila actual en el periodo en el que esta activa la señal
-         o_colactiva   : out integer range 0 to 640             --nos da la columna actual en eñ periodo en el que esta activa la señal
+         o_filaactiva  : out integer range 0 to 480;            --nos da la fila actual en el periodo en el que esta activa la seÃ±al
+         o_colactiva   : out integer range 0 to 640             --nos da la columna actual en eÃ± periodo en el que esta activa la seÃ±al
          );
         
 end vga_ctrl;
@@ -31,8 +31,8 @@ architecture behavioral of vga_ctrl is
 
     constant h_periodototal : integer := h_pixels + h_pulsewidth + h_frontporch + h_backporch;         --numero total de pixel clocks en una fila, es decir numero total de columnas o pixeles horizontales
     constant v_periodototal : integer := v_pixels + v_pulsewidth + v_frontporch + v_backporch;         --numero total de filas es decir numero total de pixeles verticales
-    signal h_count          : integer range 0 to h_periodototal - 1 := 0;                              --señal con el contador horizontal                 
-    signal v_count          : integer range 0 to v_periodototal - 1 := 0;                              --señal con el contador vertical
+    signal h_count          : integer range 0 to h_periodototal - 1 := 0;                              --seÃ±al con el contador horizontal                 
+    signal v_count          : integer range 0 to v_periodototal - 1 := 0;                              --seÃ±al con el contador vertical
 
 begin
 
@@ -48,8 +48,8 @@ begin
             o_filaactiva <= 0;      
             o_colactiva  <= 0;
             o_disp_ena   <= '0';
-            o_hsync      <= '1';                                        --las iniciamoz a 1 importantisimo por que gracias a esto sincronizamos todo
-            o_vsync      <= '1';                                        --las iniciamos a 1
+            o_hsync      <= '1';                                        
+            o_vsync      <= '1';                                        
             cont_25mhz   := 0;
             
         elsif(rising_edge(i_clock)) then 
@@ -57,7 +57,7 @@ begin
             if(cont_25mhz = 3) then
             
                 cont_25mhz  := 0;
-                --creamos los contadores de las señales              
+                --creamos los contadores de las seÃ±ales              
                 if(h_count = h_periodototal - 1) then
                     if(v_count = v_periodototal -1) then
                         v_count <= 0;
